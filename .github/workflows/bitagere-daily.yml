@@ -1,0 +1,31 @@
+name: BitAgere Daily Monitor Workflow
+
+on:
+  schedule:
+    # 每天 UTC 21:00（北京时间 05:00）执行一次
+    - cron: '0 21 * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install ShellCheck (可选静态检查脚本)
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck on scripts
+        run: |
+          shellcheck scripts/*.sh || echo "⚠️ 脚本检查发现问题，但不阻止继续运行"
+
+      - name: Show Workflow Run Info
+        run: |
+          echo "✅ GitHub Actions 工作流已成功运行"
+          echo "当前时间：$(date -u)"
